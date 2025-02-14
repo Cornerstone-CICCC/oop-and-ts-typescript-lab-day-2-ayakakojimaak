@@ -7,57 +7,37 @@
 // 4. Implement a method `getAverageGrade` that returns a student’s average grade.
 // 5. Implement a method `getStudentGrades` that returns all recorded grades for a student. Formula to get average: sumOfAllGrades / numberOfSubjects.
 // 6. Implement a method `updateSubjectGrade` that updates a subject grade for a student.
-
-interface Grade {
-  subject: string;
-  grade: number;
+class Gradebook {
+    students = [];
+    addStudent(student) {
+        this.students.push(student);
+        return `${student.name} added to the gradebook.`;
+    }
+    addGrade(id, grade) {
+        const student = this.students.find((student) => student.id === id);
+        student.grades.push(grade);
+        return `Grade recorded for ${grade.subject}.`;
+    }
+    getStudent(id) {
+        return this.students.find((student) => student.id === id);
+    }
+    getAverageGrade(id) {
+        const student = this.getStudent(id);
+        const sumOfAllGrades = student.grades.reduce((acc, grade) => acc + grade.grade, 0);
+        return sumOfAllGrades / student.grades.length;
+    }
+    getStudentGrades(id) {
+        const student = this.getStudent(id);
+        return student.grades;
+    }
+    updateSubjectGrade(id, subject, newGrade) {
+        const student = this.getStudent(id);
+        const gradeIndex = student.grades.findIndex((grade) => grade.subject === subject);
+        student.grades[gradeIndex].grade = newGrade;
+    }
 }
-
-interface Student {
-  id: number;
-  name: string;
-  grades: Grade[];
-}
-
-class Gradebook<T extends Student> {
-  students: T[] = [];
-
-  addStudent(student: T): string {
-    this.students.push(student);
-    return `${student.name} added to the gradebook.`;
-  }
-
-  addGrade(id: number, grade: Grade): string {
-    const student = this.students.find((student: T) => student.id === id);
-    student.grades.push(grade);
-    return `Grade recorded for ${grade.subject}.`;
-  }
-
-  getStudent(id: number): T {
-    return this.students.find((student: T) => student.id === id);
-  }
-
-  getAverageGrade(id: number): number {
-    const student = this.getStudent(id);
-    const sumOfAllGrades = student.grades.reduce((acc, grade) => acc + grade.grade, 0);
-    return sumOfAllGrades / student.grades.length;
-  }
-
-  getStudentGrades(id: number): Grade[] {
-    const student = this.getStudent(id);
-    return student.grades;
-  }
-
-  updateSubjectGrade(id: number, subject: string, newGrade: number): void {
-    const student = this.getStudent(id);
-    const gradeIndex = student.grades.findIndex((grade) => grade.subject === subject);
-    student.grades[gradeIndex].grade = newGrade;
-  }
-}
-
 // Test cases
 const gradebook = new Gradebook();
-
 console.log(gradebook.addStudent({ id: 1, name: "Alice", grades: [] })); // "Alice added to the gradebook."
 console.log(gradebook.addGrade(1, { subject: "Math", grade: 90 })); // "Grade recorded for Math."
 console.log(gradebook.addGrade(1, { subject: "English", grade: 80 })); // "Grade recorded for English."
